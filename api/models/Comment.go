@@ -90,7 +90,7 @@ func (c *Comment) UpdateAComment(db *gorm.DB) (*Comment, error) {
 		return &Comment{}, err
 	}
 
-	fmt.Println("this is the comment bodt: ", c.Body)
+	fmt.Println("this is the comment body: ", c.Body)
 	if c.ID != 0 {
 		err = db.Debug().Model(&User{}).Where("id = ?", c.UserID).Take(&c.User).Error
 		if err != nil {

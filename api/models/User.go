@@ -38,6 +38,7 @@ func (u *User) Prepare() {
 	u.Email = html.EscapeString(strings.TrimSpace(u.Email))
 	u.CreatedAt = time.Now()
 	u.UpdatedAt = time.Now()
+	// u.Password = hashPassword(u.Password)
 }
 
 func (u *User) AfterFind() (err error) {

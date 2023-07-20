@@ -1,6 +1,10 @@
 package formaterror
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/gin-gonic/gin"
+)
 
 var errorMessages = make(map[string]string)
 
@@ -40,4 +44,11 @@ func FormatError(errString string) map[string]string {
 	}
 
 	return nil
+}
+
+func HandleError(c *gin.Context, statusCode int, errList map[string]string) {
+	c.JSON(statusCode, gin.H{
+		"status": statusCode,
+		"error":  errList,
+	})
 }

@@ -1,4 +1,4 @@
-package main
+package fileformat
 
 import (
 	"path"
