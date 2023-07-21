@@ -317,7 +317,7 @@ func (server *Server) UpdateUser(c *gin.Context) {
 
 	userID := c.Param("id")
 	// check the user id is  valid
-	uid, err := strconv.ParseUint(userID, 10, 20)
+	uid, err := strconv.ParseUint(userID, 10, 32)
 	if err != nil {
 		errList["Invalid_request"] = "Invalid Request"
 		formaterror.HandleError(c, http.StatusBadRequest, errList)

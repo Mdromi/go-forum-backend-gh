@@ -63,7 +63,7 @@ func (c *Comment) SaveComment(db *gorm.DB) (*Comment, error) {
 
 func (c *Comment) GetComments(db *gorm.DB, pid uint64) (*[]Comment, error) {
 	comments := []Comment{}
-	err := db.Debug().Model(&Comment{}).Where("post_id", pid).Order("created_at desc").Find(&comments).Error
+	err := db.Debug().Model(&Comment{}).Where("post_id = ?", pid).Order("created_at desc").Find(&comments).Error
 	if err != nil {
 		return &[]Comment{}, err
 	}
@@ -110,9 +110,10 @@ func (c *Comment) DeleteAComment(db *gorm.DB) (int64, error) {
 }
 
 // When a user deleted, we also delete the comments that the user had
+
 func (c *Comment) DeleteUserComments(db *gorm.DB, uid uint32) (int64, error) {
 	comments := []Comment{}
-	db = db.Debug().Model(&Comment{}).Where("user_id =?", uid).Find(&comments).Delete(&comments)
+	db = db.Debug().Model(&Comment{}).Where("user_id = ?", uid).Find(&comments).Delete(&comments)
 	if db.Error != nil {
 		return 0, db.Error
 	}

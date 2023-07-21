@@ -67,7 +67,7 @@ func (p *Post) SavePost(db *gorm.DB) (*Post, error) {
 func (p *Post) FindAllPosts(db *gorm.DB) (*[]Post, error) {
 	var err error
 	posts := []Post{}
-	err = db.Debug().Model(&Post{}).Limit(100).Order("crated_at desc").Find(&posts).Error
+	err = db.Debug().Model(&Post{}).Limit(100).Order("created_at desc").Find(&posts).Error
 	if err != nil {
 		return &[]Post{}, err
 	}
@@ -97,7 +97,7 @@ func (p *Post) FindPostById(db *gorm.DB, pid uint64) (*Post, error) {
 		return &Post{}, err
 	}
 	if p.ID != 0 {
-		err = db.Debug().Model(&User{}).Where("id = ?", p.AuthorID).Take(&p.AuthorID).Error
+		err = db.Debug().Model(&User{}).Where("id = ?", p.AuthorID).Take(&p.Author).Error
 		if err != nil {
 			return &Post{}, err
 		}

@@ -11,8 +11,10 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/matcornic/hermes/v2 v2.1.0
 	github.com/sendgrid/sendgrid-go v3.12.0+incompatible
+	github.com/stretchr/testify v1.8.4
 	github.com/twinj/uuid v1.0.0
 	golang.org/x/crypto v0.11.0
+	gopkg.in/go-playground/assert.v1 v1.2.1
 )
 
 require (
@@ -23,6 +25,7 @@ require (
 	github.com/aokoli/goutils v1.0.1 // indirect
 	github.com/bytedance/sonic v1.9.1 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
@@ -49,12 +52,12 @@ require (
 	github.com/myesui/uuid v1.0.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect
 	github.com/sendgrid/rest v2.6.9+incompatible // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
-	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/vanng822/css v0.0.0-20190504095207-a21e860bcd04 // indirect
