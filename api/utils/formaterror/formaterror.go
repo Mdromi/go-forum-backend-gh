@@ -35,6 +35,18 @@ func FormatError(errString string) map[string]string {
 		errorMessages["Double_like"] = "You cannot like this post twice"
 	}
 
+	if strings.Contains(errString, "required email") {
+		errorMessages["Required_email"] = "required email"
+	}
+
+	if strings.Contains(errString, "invalid email") {
+		errorMessages["Invalid_email"] = "invalid email"
+	}
+
+	if strings.Contains(errString, "required password") {
+		errorMessages["Required_password"] = "required password"
+	}
+
 	if len(errorMessages) > 0 {
 		return errorMessages
 	}

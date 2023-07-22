@@ -38,7 +38,7 @@ func TestSaveUser(t *testing.T) {
 		ID:       1,
 		Email:    "test@example.com",
 		Username: "test",
-		Password: "pas123",
+		Password: "password",
 	}
 	savedUser, err := newUser.SaveUser(server.DB)
 	if err != nil {
@@ -82,7 +82,7 @@ func TestUpdateAuser(t *testing.T) {
 		ID:       1,
 		Username: "modiUpdate",
 		Email:    "modiupdate@example.com",
-		Password: "pas123",
+		Password: "password",
 	}
 	updatedUser, err := userUpdate.UpdateAUser(server.DB, user.ID)
 

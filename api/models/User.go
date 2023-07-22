@@ -63,61 +63,61 @@ func (u *User) Validate(action string) map[string]string {
 	switch strings.ToLower(action) {
 	case "update":
 		if u.Email == "" {
-			err = errors.New("required email")
+			err = errors.New("Required Email")
 			errorMessages["Required_email"] = err.Error()
 		}
 		if u.Email != "" {
 			if err = checkmail.ValidateFormat(u.Email); err != nil {
-				err = errors.New("invalid email")
+				err = errors.New("Invalid Email")
 				errorMessages["Invalid_email"] = err.Error()
 			}
 		}
 	case "login":
 		if u.Password == "" {
-			err = errors.New("required password")
+			err = errors.New("Required Password")
 			errorMessages["Required_password"] = err.Error()
 		}
 		if u.Email == "" {
-			err = errors.New("required email")
+			err = errors.New("Required Email")
 			errorMessages["Required_email"] = err.Error()
 		}
 		if u.Email != "" {
 			if err = checkmail.ValidateFormat(u.Email); err != nil {
-				err = errors.New("invalid email")
+				err = errors.New("Invalid Email")
 				errorMessages["Invalid_email"] = err.Error()
 			}
 		}
 	case "forgotpassword":
 		if u.Email == "" {
-			err = errors.New("required email")
+			err = errors.New("Required Email")
 			errorMessages["Required_email"] = err.Error()
 		}
 		if u.Email != "" {
 			if err = checkmail.ValidateFormat(u.Email); err != nil {
-				err = errors.New("invalid email")
+				err = errors.New("Invalid Email")
 				errorMessages["Invalid_email"] = err.Error()
 			}
 		}
 	default:
 		if u.Username == "" {
-			err = errors.New("required username")
+			err = errors.New("Required Username")
 			errorMessages["Required_username"] = err.Error()
 		}
 		if u.Password == "" {
-			err = errors.New("required password")
+			err = errors.New("Required Password")
 			errorMessages["Required_password"] = err.Error()
 		}
 		if u.Password != "" && len(u.Password) < 6 {
-			err = errors.New("password should be atlest 6 charcters")
+			err = errors.New("password should be atleast 6 characters")
 			errorMessages["Invalid_password"] = err.Error()
 		}
 		if u.Email == "" {
-			err = errors.New("required email")
+			err = errors.New("Required Email")
 			errorMessages["Required_email"] = err.Error()
 		}
 		if u.Email != "" {
 			if err = checkmail.ValidateFormat(u.Email); err != nil {
-				err = errors.New("invalid email")
+				err = errors.New("Invalid Email")
 				errorMessages["Invalid_email"] = err.Error()
 			}
 		}
@@ -197,7 +197,7 @@ func (u *User) UpdateAUserAvatar(db *gorm.DB, uid uint32) (*User, error) {
 	db = db.Debug().Model(&User{}).Where("id = ?").Take(&User{}).UpdateColumns(
 		map[string]interface{}{
 			"avatar_path": u.AvatarPath,
-			"update_at":   time.Now(),
+			"updated_at":  time.Now(),
 		},
 	)
 	if db.Error != nil {
@@ -229,8 +229,8 @@ func (u *User) UpdatePassword(db *gorm.DB) error {
 	}
 
 	db = db.Debug().Model(&User{}).Where("email = ?", u.Email).Take(&User{}).UpdateColumns(map[string]interface{}{
-		"password":  u.Password,
-		"update_at": time.Now(),
+		"password":   u.Password,
+		"updated_at": time.Now(),
 	},
 	)
 	if db.Error != nil {

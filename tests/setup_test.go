@@ -19,22 +19,37 @@ var likeInstance = models.Like{}
 var commentInstance = models.Comment{}
 
 func TestMain(m *testing.M) {
-	// UNCOMMIT THIS WHILE TESTING ON LOCAL (WITHOUT USING CIRCLE CI), BUT LEAVE IT COMMENTED IF YOU ARE USING CIRCLE CI
-	var err error
-	err = godotenv.Load(os.ExpandEnv("./../.env"))
-	if err != nil {
-		log.Fatalf("Error getting env %v\n", err)
+	//Since we add our .env in .gitignore, Circle CI cannot see it, so see the else statement
+	if _, err := os.Stat("./../.env"); !os.IsNotExist(err) {
+		var err error
+		err = godotenv.Load(os.ExpandEnv("./../.env"))
+		if err != nil {
+			log.Fatalf("Error getting env %v\n", err)
+		}
+		Database()
+	} else {
+		CIBuild()
 	}
-
-	Database()
-
 	os.Exit(m.Run())
 }
 
+// When using CircleCI
+func CIBuild() {
+	var err error
+	DBURL := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", "127.0.0.1", "5432", "steven", "forum_db_test", "password")
+	server.DB, err = gorm.Open("postgres", DBURL)
+	if err != nil {
+		fmt.Printf("Cannot connect to %s database\n", "postgres")
+		log.Fatal("This is the error:", err)
+	} else {
+		fmt.Printf("We are connected to the %s database\n", "postgres")
+	}
+}
+
 func Database() {
+
 	var err error
 
-	////////////////////////////////// UNCOMMENT THIS WHILE TESTING ON LOCAL(WITHOUT USING CIRCLE CI) ///////////////////////
 	TestDbDriver := os.Getenv("TEST_DB_DRIVER")
 	if TestDbDriver == "mysql" {
 		DBURL := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", os.Getenv("TEST_DB_USER"), os.Getenv("TEST_DB_PASSWORD"), os.Getenv("TEST_DB_HOST"), os.Getenv("TEST_DB_PORT"), os.Getenv("TEST_DB_NAME"))
@@ -56,20 +71,6 @@ func Database() {
 			fmt.Printf("We are connected to the %s database\n", TestDbDriver)
 		}
 	}
-	/////////////////////////////////  END OF LOCAL TEST DATABASE SETUP ///////////////////////////////////////////////////
-
-	//////////////////////////////////  COMMENT THIS WHILE TESTING ON LOCAL(WITHOUT USING CIRCLE CI)  //////////////////////
-	// WE HAVE TO INPUT TESTING DATA MANUALLY BECAUSE CIRCLECI, CANNOT READ THE ".env" FILE WHICH, WE WOULD HAVE ADDED THE TEST CONFIG THERE
-	// SO MANUALLY ADD THE NAME OF THE DATABASE, THE USER AND THE PASSWORD, AS SEEN BELOW:
-	// DBURL := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", "127.0.0.1", "5432", "mdromi", "forum_db_test", "md@romI-")
-	// server.DB, err = gorm.Open("postgres", DBURL)
-	// if err != nil {
-	// 	fmt.Printf("Cannot connect to %s database\n", "postgres")
-	// 	log.Fatal("This is the error:", err)
-	// } else {
-	// 	fmt.Printf("We are connected to the %s database\n", "postgres")
-	// }
-	//////////////////////////////// END OF USING CIRCLE CI ////////////////////////////////////////////////////////////////
 }
 
 func refreshUserTable() error {
@@ -86,10 +87,11 @@ func refreshUserTable() error {
 }
 
 func seedOneUser() (models.User, error) {
+
 	user := models.User{
 		Username: "Pet",
 		Email:    "pet@example.com",
-		Password: "pas123",
+		Password: "password",
 	}
 
 	err := server.DB.Model(&models.User{}).Create(&user).Error
@@ -100,21 +102,21 @@ func seedOneUser() (models.User, error) {
 }
 
 func seedUsers() ([]models.User, error) {
+
 	var err error
 	if err != nil {
 		return nil, err
 	}
-
 	users := []models.User{
 		models.User{
-			Username: "romi",
-			Email:    "romi@example.com",
-			Password: "pas123",
+			Username: "Steven",
+			Email:    "steven@example.com",
+			Password: "password",
 		},
 		models.User{
-			Username: "mdomi",
-			Email:    "mdomi@example.com",
-			Password: "pas123",
+			Username: "Kenny",
+			Email:    "kenny@example.com",
+			Password: "password",
 		},
 	}
 
@@ -128,11 +130,11 @@ func seedUsers() ([]models.User, error) {
 }
 
 func refreshUserAndPostTable() error {
+
 	err := server.DB.DropTableIfExists(&models.User{}, &models.Post{}).Error
 	if err != nil {
 		return err
 	}
-
 	err = server.DB.AutoMigrate(&models.User{}, &models.Post{}).Error
 	if err != nil {
 		return err
@@ -142,16 +144,16 @@ func refreshUserAndPostTable() error {
 }
 
 func seedOneUserAndOnePost() (models.User, models.Post, error) {
+
 	user := models.User{
 		Username: "Sam",
 		Email:    "sam@example.com",
-		Password: "pas123",
+		Password: "password",
 	}
 	err := server.DB.Model(&models.User{}).Create(&user).Error
 	if err != nil {
 		return models.User{}, models.Post{}, err
 	}
-
 	post := models.Post{
 		Title:    "This is the title sam",
 		Content:  "This is the content sam",
@@ -165,16 +167,17 @@ func seedOneUserAndOnePost() (models.User, models.Post, error) {
 }
 
 func seedUsersAndPosts() ([]models.User, []models.Post, error) {
+
 	var err error
+
 	if err != nil {
 		return []models.User{}, []models.Post{}, err
 	}
-
 	var users = []models.User{
 		models.User{
 			Username: "Steven",
 			Email:    "steven@example.com",
-			Password: "pas123",
+			Password: "password",
 		},
 		models.User{
 			Username: "Magu",
@@ -228,24 +231,22 @@ func seedUsersPostsAndLikes() (models.Post, []models.User, []models.Like, error)
 		models.User{
 			Username: "Steven",
 			Email:    "steven@example.com",
-			Password: "pas123",
+			Password: "password",
 		},
 		models.User{
 			Username: "Magu",
 			Email:    "magu@example.com",
-			Password: "pas123",
+			Password: "password",
 		},
 	}
 	post := models.Post{
 		Title:   "This is the title",
 		Content: "This is the content",
 	}
-
 	err = server.DB.Model(&models.Post{}).Create(&post).Error
 	if err != nil {
 		log.Fatalf("cannot seed post table: %v", err)
 	}
-
 	var likes = []models.Like{
 		models.Like{
 			UserID: 1,
@@ -256,7 +257,6 @@ func seedUsersPostsAndLikes() (models.Post, []models.User, []models.Like, error)
 			PostID: post.ID,
 		},
 	}
-
 	for i, _ := range users {
 		err = server.DB.Model(&models.User{}).Create(&users[i]).Error
 		if err != nil {
@@ -290,24 +290,22 @@ func seedUsersPostsAndComments() (models.Post, []models.User, []models.Comment, 
 		models.User{
 			Username: "Steven",
 			Email:    "steven@example.com",
-			Password: "pas123",
+			Password: "password",
 		},
 		models.User{
 			Username: "Magu",
 			Email:    "magu@example.com",
-			Password: "pas123",
+			Password: "password",
 		},
 	}
 	post := models.Post{
 		Title:   "This is the title",
 		Content: "This is the content",
 	}
-
 	err = server.DB.Model(&models.Post{}).Create(&post).Error
 	if err != nil {
 		log.Fatalf("cannot seed post table: %v", err)
 	}
-
 	var comments = []models.Comment{
 		models.Comment{
 			Body:   "user 1 made this comment",
@@ -320,7 +318,6 @@ func seedUsersPostsAndComments() (models.Post, []models.User, []models.Comment, 
 			PostID: post.ID,
 		},
 	}
-
 	for i, _ := range users {
 		err = server.DB.Model(&models.User{}).Create(&users[i]).Error
 		if err != nil {
@@ -339,7 +336,6 @@ func refreshUserAndResetPasswordTable() error {
 	if err != nil {
 		return err
 	}
-
 	err = server.DB.AutoMigrate(&models.User{}, &models.ResetPassword{}).Error
 	if err != nil {
 		return err
@@ -348,13 +344,13 @@ func refreshUserAndResetPasswordTable() error {
 	return nil
 }
 
-// seed the reset password table with the token
+// Seed the reset password table with the token
 func seedResetPassword() (models.ResetPassword, error) {
+
 	resetDetails := models.ResetPassword{
 		Token: "awesometoken",
 		Email: "pet@example.com",
 	}
-
 	err := server.DB.Model(&models.ResetPassword{}).Create(&resetDetails).Error
 	if err != nil {
 		return models.ResetPassword{}, err

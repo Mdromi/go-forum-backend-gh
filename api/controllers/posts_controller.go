@@ -153,7 +153,7 @@ func (server *Server) UpdatePost(c *gin.Context) {
 		return
 	}
 
-	//CHeck if the auth token is valid and  get the user id from it
+	//Check if the auth token is valid and  get the user id from it
 	uid, err := auth.ExtractTokenID(c.Request)
 	if err != nil {
 		errList["Unauthorized"] = "Unauthorized"
@@ -243,6 +243,7 @@ func (server *Server) DeletePost(c *gin.Context) {
 	pid, err := strconv.ParseUint(postID, 10, 64)
 	if err != nil {
 		errList["Invalid_request"] = "Invalid Request"
+		fmt.Println("problem 1")
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": http.StatusBadRequest,
 			"error":  errList,
@@ -256,6 +257,7 @@ func (server *Server) DeletePost(c *gin.Context) {
 	uid, err := auth.ExtractTokenID(c.Request)
 	if err != nil {
 		errList["Unauthorized"] = "Unauthorized"
+		fmt.Println("problem 2")
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"status": http.StatusUnauthorized,
 			"error":  errList,
@@ -268,6 +270,7 @@ func (server *Server) DeletePost(c *gin.Context) {
 	err = server.DB.Model(models.Post{}).Where("id = ?", pid).Take(&post).Error
 	if err != nil {
 		errList["No_post"] = "No Post Found"
+		fmt.Println("problem 3")
 		c.JSON(http.StatusNotFound, gin.H{
 			"status": http.StatusNotFound,
 			"error":  errList,
@@ -277,6 +280,7 @@ func (server *Server) DeletePost(c *gin.Context) {
 	// Is the authenticated user, the owner of this post?
 	if uid != post.AuthorID {
 		errList["Unauthorized"] = "Unauthorized"
+		fmt.Println("problem 4")
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"status": http.StatusUnauthorized,
 			"error":  errList,
@@ -288,6 +292,7 @@ func (server *Server) DeletePost(c *gin.Context) {
 	_, err = post.DeleteAPost(server.DB)
 	if err != nil {
 		errList["Other_error"] = "Please try again later"
+		fmt.Println("problem 5")
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": http.StatusInternalServerError,
 			"error":  errList,
@@ -302,6 +307,7 @@ func (server *Server) DeletePost(c *gin.Context) {
 	_, err = commnnt.DeletePostComments(server.DB, pid)
 	if err != nil {
 		errList["Other_error"] = "Please try again later"
+		fmt.Println("problem 6")
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": http.StatusInternalServerError,
 			"error":  errList,
@@ -312,6 +318,7 @@ func (server *Server) DeletePost(c *gin.Context) {
 	_, err = like.DeletePostLikes(server.DB, pid)
 	if err != nil {
 		errList["Other_error"] = "Please try again later"
+		fmt.Println("problem 7")
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": http.StatusInternalServerError,
 			"error":  errList,

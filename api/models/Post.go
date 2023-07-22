@@ -12,7 +12,7 @@ import (
 type Post struct {
 	ID        uint64    `gorm:"primary_key;auto_increment" json:"id"`
 	Title     string    `gorm:"size:255;not null;unique" json:"title"`
-	Content   string    `gorm:"text; not null;"`
+	Content   string    `gorm:"text;not null;" json:"content"`
 	Author    User      `json:"user"`
 	AuthorID  uint32    `gorm:"not null" json:"author_id"`
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
@@ -32,17 +32,17 @@ func (p *Post) Validate() map[string]string {
 
 	var errorMessages = make(map[string]string)
 	if p.Title == "" {
-		err = errors.New("required title")
+		err = errors.New("Required Title")
 		errorMessages["Required_title"] = err.Error()
 
 	}
 	if p.Content == "" {
-		err = errors.New("required content")
+		err = errors.New("Required Content")
 		errorMessages["Required_content"] = err.Error()
 	}
 
 	if p.AuthorID < 1 {
-		err = errors.New("required Author")
+		err = errors.New("Required Author")
 		errorMessages["Required_author"] = err.Error()
 	}
 	return errorMessages
@@ -114,7 +114,7 @@ func (p *Post) UpdateAPost(db *gorm.DB) (*Post, error) {
 		return &Post{}, err
 	}
 	if p.ID != 0 {
-		err = db.Debug().Model(&Post{}).Where("id =?", p.AuthorID).Take(&p.Author).Error
+		err = db.Debug().Model(&Post{}).Where("id = ?", p.AuthorID).Take(&p.Author).Error
 		if err != nil {
 			return &Post{}, err
 		}

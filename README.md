@@ -98,6 +98,11 @@
   ```
 
 
+## Database Models Relationship
+<div align="center">
+    <img src="./go-forum-backend-gh-db-model.svg"  height="600" alt="go-forum-backend-gh-db-model.svg">
+</div>
+
 ## API Docs
 1. Login Route
     ```

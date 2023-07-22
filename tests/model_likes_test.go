@@ -91,7 +91,7 @@ func TestDeleteLikesForAPost(t *testing.T) {
 		t.Errorf("this is the error deleting the like: %v\n", err)
 		return
 	}
-	assert.Equal(t, numberDeleted, int64(1))
+	assert.Equal(t, numberDeleted, int64(2))
 }
 
 // When a user is deleted, delete its likes

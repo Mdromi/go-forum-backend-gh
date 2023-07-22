@@ -147,7 +147,7 @@ func (server *Server) ResetPassword(c *gin.Context) {
 	if requestBody["new_password"] != "" && requestBody["retype_password"] != "" {
 		// also check if the new password
 		if len(requestBody["new_password"]) < 6 || len(requestBody["retype_password"]) < 6 {
-			errList["Invalid_password"] = "password should be atlest 6 charcters"
+			errList["Invalid_password"] = "password should be atleast 6 characters"
 			c.JSON(http.StatusUnprocessableEntity, gin.H{
 				"status": http.StatusUnprocessableEntity,
 				"error":  errList,

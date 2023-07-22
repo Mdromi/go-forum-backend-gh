@@ -67,8 +67,8 @@ func (server *Server) CreateUser(c *gin.Context) {
 	if err != nil {
 		formattedError := formaterror.FormatError(err.Error())
 		errList = formattedError
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"status": http.StatusUnprocessableEntity,
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": http.StatusInternalServerError,
 			"error":  errList,
 		})
 		return
@@ -117,9 +117,9 @@ func (server *Server) GetUser(c *gin.Context) {
 
 	userGotten, err := user.FindUserByID(server.DB, uint32(uid))
 	if err != nil {
-		errList["Invalid_request"] = "Invalid Request"
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status": http.StatusBadRequest,
+		errList["No_user"] = "No User Found"
+		c.JSON(http.StatusNotFound, gin.H{
+			"status": http.StatusNotFound,
 			"error":  errList,
 		})
 		return
@@ -320,7 +320,10 @@ func (server *Server) UpdateUser(c *gin.Context) {
 	uid, err := strconv.ParseUint(userID, 10, 32)
 	if err != nil {
 		errList["Invalid_request"] = "Invalid Request"
-		formaterror.HandleError(c, http.StatusBadRequest, errList)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": http.StatusBadRequest,
+			"error":  errList,
+		})
 		return
 	}
 
@@ -328,14 +331,20 @@ func (server *Server) UpdateUser(c *gin.Context) {
 	tokenID, err := auth.ExtractTokenID(c.Request)
 	if err != nil {
 		errList["Unauthorized"] = "Unauthorized"
-		formaterror.HandleError(c, http.StatusUnauthorized, errList)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status": http.StatusUnauthorized,
+			"error":  errList,
+		})
 		return
 	}
 
 	// if the id is not the authentiacation user id
 	if tokenID != 0 && tokenID != uint32(uid) {
 		errList["Unauthorized"] = "Unauthorized"
-		formaterror.HandleError(c, http.StatusUnauthorized, errList)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status": http.StatusUnauthorized,
+			"error":  errList,
+		})
 		return
 	}
 
@@ -343,7 +352,10 @@ func (server *Server) UpdateUser(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		errList["Invalid_body"] = "Unable to get request"
-		formaterror.HandleError(c, http.StatusUnprocessableEntity, errList)
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"status": http.StatusUnprocessableEntity,
+			"error":  errList,
+		})
 		return
 	}
 
@@ -351,7 +363,10 @@ func (server *Server) UpdateUser(c *gin.Context) {
 	err = json.Unmarshal(body, &requestBody)
 	if err != nil {
 		errList["Unmarshal_error"] = "Cannot unmarshal body"
-		formaterror.HandleError(c, http.StatusUnprocessableEntity, errList)
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"status": http.StatusUnprocessableEntity,
+			"error":  errList,
+		})
 		return
 	}
 
@@ -360,7 +375,10 @@ func (server *Server) UpdateUser(c *gin.Context) {
 	err = server.DB.Debug().Model(models.User{}).Where("id = ?", uid).Take(&formerUser).Error
 	if err != nil {
 		errList["User_invalid"] = "The user is does not exist"
-		formaterror.HandleError(c, http.StatusUnprocessableEntity, errList)
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"status": http.StatusUnprocessableEntity,
+			"error":  errList,
+		})
 		return
 	}
 
@@ -369,19 +387,28 @@ func (server *Server) UpdateUser(c *gin.Context) {
 	// when current password has content.
 	if requestBody["current_password"] == "" && requestBody["new_password"] != "" {
 		errList["Empty_current"] = "Please Provide current password"
-		formaterror.HandleError(c, http.StatusUnprocessableEntity, errList)
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"status": http.StatusUnprocessableEntity,
+			"error":  errList,
+		})
 		return
 	}
-	if requestBody["current_password"] != "" && requestBody["Empty_new"] == "" {
-		errList["Empty_current"] = "Please Provide new password"
-		formaterror.HandleError(c, http.StatusUnprocessableEntity, errList)
+	if requestBody["current_password"] != "" && requestBody["new_password"] == "" {
+		errList["Empty_current"] = "Please Provide current password"
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"status": http.StatusUnprocessableEntity,
+			"error":  errList,
+		})
 		return
 	}
 	if requestBody["current_password"] != "" && requestBody["new_password"] != "" {
 		// also check if the new password
 		if len(requestBody["new_password"]) < 6 {
-			errList["Invalid_password"] = "Please should be atlest 6 charcters"
-			formaterror.HandleError(c, http.StatusUnprocessableEntity, errList)
+			errList["Invalid_password"] = "Password should be atleast 6 characters"
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"status": http.StatusUnprocessableEntity,
+				"error":  errList,
+			})
 			return
 		}
 		// if they do, check that the former password is correct
@@ -389,7 +416,10 @@ func (server *Server) UpdateUser(c *gin.Context) {
 
 		if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
 			errList["Password_mismatch"] = "The password not correct"
-			formaterror.HandleError(c, http.StatusUnprocessableEntity, errList)
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"status": http.StatusUnprocessableEntity,
+				"error":  errList,
+			})
 			return
 		}
 
@@ -406,14 +436,20 @@ func (server *Server) UpdateUser(c *gin.Context) {
 	errorMessages := newUser.Validate("update")
 	if len(errorMessages) > 0 {
 		errList = errorMessages
-		formaterror.HandleError(c, http.StatusUnprocessableEntity, errList)
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"status": http.StatusUnprocessableEntity,
+			"error":  errList,
+		})
 		return
 	}
 
 	updatedUser, err := newUser.UpdateAUser(server.DB, uint32(uid))
 	if err != nil {
 		errList := formaterror.FormatError(err.Error())
-		formaterror.HandleError(c, http.StatusInternalServerError, errList)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": http.StatusInternalServerError,
+			"error":  errList,
+		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
